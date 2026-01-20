@@ -50,3 +50,5 @@ public class Device {
         this.users = users;
     }
 }
+
+//This is a test
