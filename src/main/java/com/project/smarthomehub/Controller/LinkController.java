@@ -40,12 +40,9 @@ public class LinkController {
 
     @GetMapping
     public ResponseEntity<?> IsUserLinkedToDevice(@RequestBody Link link) {
-        Optional<Device> device = deviceService.getDeviceById(link.getDeviceID());
-        Optional<User> user = userService.getUserById(link.getUserID());
-        if(device.isPresent() && user.isPresent()) {
-            if (linkService.isUserLinkedToDevice(user.get(), device.get()))
-                return ResponseEntity.ok().build();
-            }
+        if (linkService.isUserLinkedToDevice(link.getUserID(), link.getDeviceID())) {
+            return ResponseEntity.ok().build();
+        }
         return ResponseEntity.notFound().build();
     }
 

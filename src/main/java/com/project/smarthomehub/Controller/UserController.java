@@ -21,7 +21,7 @@ public class UserController {
     public ResponseEntity<?> addUser(@RequestBody User user1) {
         Optional<User> user = userService.addUser(user1.getUsername(), user1.getPassword());
         if(user.isPresent()) {
-            return ResponseEntity.ok(user1);
+            return ResponseEntity.ok(user);
         }else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error, Username in use");
         }

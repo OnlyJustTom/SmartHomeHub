@@ -6,11 +6,6 @@ import jakarta.persistence.*;
 @Entity
 public class LinkedDevice {
 
-    //TODO - This below
-    //This is a table that links users to devices allowing for multiple users to link different devices to the hub
-    //Composite key of User ID and Device ID
-    //One-to-Many relationship between User and Device -> One user can have Many devices linked to them
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

@@ -1,6 +1,7 @@
 package com.project.smarthomehub.Controller;
 
 import com.project.smarthomehub.Domain.Device;
+import com.project.smarthomehub.Helpers.DeviceRequest;
 import com.project.smarthomehub.Service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,12 @@ public class DeviceController {
             return ResponseEntity.ok().body(DeviceToAdd.get());
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/control")
+    public ResponseEntity<?> controlDevice(@RequestBody DeviceRequest deviceRequest) {
+        deviceService.DecodeDeviceCommand(deviceRequest);
+        return ResponseEntity.ok().build();
     }
 
 }

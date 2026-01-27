@@ -7,8 +7,6 @@ import com.project.smarthomehub.Repo.LinkRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class LinkService {
 
@@ -23,9 +21,8 @@ public class LinkService {
         linkRepo.save(linkedDevice);
     }
 
-    public Boolean isUserLinkedToDevice(User user , Device device) {
-        Optional<LinkedDevice> link = linkRepo.findByUser_Id(user.getId()); //TODO - Fix NULL error here - repo not finding link
-        return link.isPresent() && link.get().getDevice().equals(device);
+    public Boolean isUserLinkedToDevice(Integer userID, Integer deviceID) {
+        return linkRepo.existsByUser_IdAndDevice_Id(userID,deviceID);
     }
 
 }

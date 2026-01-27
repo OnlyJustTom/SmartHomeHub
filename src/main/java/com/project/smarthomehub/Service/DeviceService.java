@@ -1,6 +1,8 @@
 package com.project.smarthomehub.Service;
 
+import com.project.smarthomehub.DeviceControllers.LIFX;
 import com.project.smarthomehub.Domain.Device;
+import com.project.smarthomehub.Helpers.DeviceRequest;
 import com.project.smarthomehub.Repo.DeviceRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,11 @@ public class DeviceService {
 
     @Autowired
     private DeviceRepo deviceRepo;
+    @Autowired
+    private LinkService linkService;
+
+    @Autowired
+    LIFX lifx;
 
     public Optional<Device> addDevice(Device device) {
             deviceRepo.save(device);
@@ -29,5 +36,18 @@ public class DeviceService {
     private boolean doesDeviceExist(String name) {
         Optional<Device> device = deviceRepo.findByName(name);
         return device.isPresent();
+    }
+
+    public boolean DecodeDeviceCommand(DeviceRequest Request){
+        //Check if user and device are linked
+        if(!linkService.isUserLinkedToDevice(Request.GetUserID(), Request.GetDeviceID())){
+            //Devices are not linked
+            return false;
+        }
+        switch (Request.GetDeviceType()) {
+            case LIFX:
+                lifx.ExecuteCommand(Request);
+        }
+        return true;
     }
 }

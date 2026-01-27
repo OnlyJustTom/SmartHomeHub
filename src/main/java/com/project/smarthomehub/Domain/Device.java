@@ -13,7 +13,7 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    //private DeviceType type;
+    private DeviceType type;
     private String APIKey;
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
