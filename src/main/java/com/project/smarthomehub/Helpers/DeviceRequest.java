@@ -5,41 +5,36 @@ import com.project.smarthomehub.DeviceType;
 
 public class DeviceRequest {
 
-    private int UserID;
-    private int DeviceID;
-    private DeviceType DeviceType;
-    private CommandType CommandType;
-    private String CommandData; //Json String
+    private int userId;
+    private int deviceId;
+    private DeviceType deviceType;
+    private CommandType commandType;
+    private String commandData;
 
     //Getters
-    public int GetUserID() {
-        return UserID;
-    }
-    public void SetUserID(int UserID) {
-        this.UserID = UserID;
-    }
-    public int GetDeviceID() {
-        return DeviceID;
-    }
-    public void SetDeviceID(int DeviceID) {
-        this.DeviceID = DeviceID;
-    }
-    public DeviceType GetDeviceType() {
-        return DeviceType;
-    }
-    public void SetDeviceType(DeviceType DeviceType) {
-        this.DeviceType = DeviceType;
-    }
-    public CommandType GetCommandType() {
-        return CommandType;
-    }
-    public void SetCommandType(CommandType CommandType) {
-        this.CommandType = CommandType;
-    }
-    public String GetCommandData() {
-        return CommandData;
-    }
-    public void SetCommandData(String CommandData) {
-        this.CommandData = CommandData;
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
+
+    public int getDeviceId() { return deviceId; }
+    public void setDeviceId(int deviceId) { this.deviceId = deviceId; }
+
+    public DeviceType getDeviceType() { return deviceType; }
+    public void setDeviceType(DeviceType deviceType) { this.deviceType = deviceType; }
+
+    public CommandType getCommandType() { return commandType; }
+    public void setCommandType(CommandType commandType) { this.commandType = commandType; }
+
+    public String getCommandData() { return commandData; }
+    public void setCommandData(String commandData) { this.commandData = commandData; }
+
+    @Override
+    public String toString() {
+        return "DeviceRequest{" +
+                "UserID=" + userId +
+                ", DeviceID=" + deviceId +
+                ", DeviceType=" + deviceType +
+                ", CommandType=" + commandType +
+                ", CommandData='" + commandData + '\'' +
+                '}';
     }
 }

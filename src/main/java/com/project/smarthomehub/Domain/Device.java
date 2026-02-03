@@ -31,12 +31,12 @@ public class Device {
     public void setName(String name) {
         this.name = name;
     }
-//    public DeviceType getType() {
-//        return type;
-//    }
-//    public void setType(DeviceType type) {
-//        this.type = type;
-//    }
+    public DeviceType getType() {
+        return type;
+    }
+    public void setType(DeviceType type) {
+        this.type = type;
+    }
     public String getAPIKey() {
         return APIKey;
     }

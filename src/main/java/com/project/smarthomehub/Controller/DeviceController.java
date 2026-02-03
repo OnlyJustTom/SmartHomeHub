@@ -33,8 +33,13 @@ public class DeviceController {
 
     @PostMapping("/control")
     public ResponseEntity<?> controlDevice(@RequestBody DeviceRequest deviceRequest) {
-        deviceService.DecodeDeviceCommand(deviceRequest);
-        return ResponseEntity.ok().build();
+        boolean result = deviceService.DecodeDeviceCommand(deviceRequest);
+        if (result) {
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

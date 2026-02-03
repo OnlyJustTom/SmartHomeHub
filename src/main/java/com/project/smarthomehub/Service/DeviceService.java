@@ -1,5 +1,6 @@
 package com.project.smarthomehub.Service;
 
+import com.project.smarthomehub.CommandType;
 import com.project.smarthomehub.DeviceControllers.LIFX;
 import com.project.smarthomehub.Domain.Device;
 import com.project.smarthomehub.Helpers.DeviceRequest;
@@ -16,7 +17,6 @@ public class DeviceService {
     private DeviceRepo deviceRepo;
     @Autowired
     private LinkService linkService;
-
     @Autowired
     LIFX lifx;
 
@@ -39,12 +39,14 @@ public class DeviceService {
     }
 
     public boolean DecodeDeviceCommand(DeviceRequest Request){
-        //Check if user and device are linked
-        if(!linkService.isUserLinkedToDevice(Request.GetUserID(), Request.GetDeviceID())){
+        System.out.println(Request.toString());
+        //Check if user and device are linked, if the command is GET_INFO then the user and device dont need to be linked
+        if(!linkService.isUserLinkedToDevice(Request.getUserId(), Request.getDeviceId()) && Request.getCommandType() != CommandType.GET_INFO){
             //Devices are not linked
+            System.out.println("User is not linked to the device");
             return false;
         }
-        switch (Request.GetDeviceType()) {
+        switch (Request.getDeviceType()) {
             case LIFX:
                 lifx.ExecuteCommand(Request);
         }
