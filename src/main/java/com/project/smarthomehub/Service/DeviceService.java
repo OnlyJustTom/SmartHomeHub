@@ -2,6 +2,7 @@ package com.project.smarthomehub.Service;
 
 import com.project.smarthomehub.CommandType;
 import com.project.smarthomehub.DeviceControllers.LIFX;
+import com.project.smarthomehub.DeviceControllers.MicroController;
 import com.project.smarthomehub.Domain.Device;
 import com.project.smarthomehub.Helpers.DeviceRequest;
 import com.project.smarthomehub.Repo.DeviceRepo;
@@ -19,7 +20,8 @@ public class DeviceService {
     private LinkService linkService;
     @Autowired
     LIFX lifx;
-
+    @Autowired
+    MicroController microController;
     public Optional<Device> addDevice(Device device) {
             deviceRepo.save(device);
             return Optional.of(device);
@@ -49,6 +51,9 @@ public class DeviceService {
         switch (Request.getDeviceType()) {
             case LIFX:
                 lifx.ExecuteCommand(Request);
+                break;
+            case MICROCONTROLLER:
+                microController.ExecuteCommand(Request);
         }
         return true;
     }
