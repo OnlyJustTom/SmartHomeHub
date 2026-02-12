@@ -59,7 +59,7 @@ public class LIFX {
         }
     }
     private void Power(DeviceRequest command, String APIKey, String name) {
-        String selector = URLEncoder.encode(name, StandardCharsets.UTF_8);
+        String selector = URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20"); // fix form encoding -> URI encoding;
         System.out.println(selector);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.lifx.com/v1/lights/" + selector + "/toggle")) //TODO - Fix Selector issue - should be id or label of device - almost done
