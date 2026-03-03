@@ -33,6 +33,30 @@ public class UserService {
         }
     }
 
+    public Optional<User> updateUser(User user) {
+        if(!doesUserExist(user.getUsername())) {
+            return Optional.empty();
+        }
+        else{
+            User userToUpdate = getUserByUsername(user.getUsername()).get();
+            userToUpdate.setUsername(user.getUsername());
+            userToUpdate.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            userRepo.save(userToUpdate);
+            return Optional.of(userToUpdate);
+        }
+    }
+
+    public Optional<User> deleteUser(String username) {
+        if(!doesUserExist(username)) {
+            return Optional.empty();
+        }
+        else{
+            User userToDelete = getUserByUsername(username).get();
+            userRepo.delete(userToDelete);
+            return Optional.of(userToDelete);
+        }
+    }
+
     public Map<Boolean, String> validateUser(User user) {
         Optional<User> userToValidate = userRepo.findByUsername(user.getUsername());
 

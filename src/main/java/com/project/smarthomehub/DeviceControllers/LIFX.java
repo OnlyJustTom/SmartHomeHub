@@ -6,7 +6,6 @@ import com.project.smarthomehub.Domain.Device;
 import com.project.smarthomehub.Helpers.DeviceRequest;
 import com.project.smarthomehub.Helpers.LifxResponse;
 import com.project.smarthomehub.Repo.DeviceRepo;
-import com.project.smarthomehub.Service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.type.TypeReference;
@@ -32,24 +31,26 @@ public class LIFX {
     public void ExecuteCommand(DeviceRequest request){
         String APIKey;
         String Name = "all";
+        String selector = "";
         if(request.getCommandType() != CommandType.GET_INFO){
             APIKey = deviceRepo.findById(request.getDeviceId()).get().getAPIKey();
             Name = "label:" + deviceRepo.findById(request.getDeviceId()).get().getName();
+            selector = URLEncoder.encode(Name, StandardCharsets.UTF_8).replace("+", "%20"); // fix form encoding -> URI encoding;
             System.out.println(Name);
         }else{
+            //Only the API key is passed by the user on initial discovery of lights after this all API keys are stored in the DB
             APIKey = request.getCommandData();
         }
 
         switch (request.getCommandType()){
             case POWER:
-                System.out.println("Power Command");
-                Power(request, APIKey, Name);
+                Power(request, APIKey, selector);
                 break;
             case COLOUR:
-                Colour(request, APIKey, Name);
+                Colour(request, APIKey, selector);
                 break;
             case BRIGHTNESS:
-                Brightness(request, APIKey, Name);
+                Brightness(request, APIKey, selector);
                 break;
             case GET_INFO:
                 getInfo(request, APIKey);
@@ -58,9 +59,7 @@ public class LIFX {
                 break;
         }
     }
-    private void Power(DeviceRequest command, String APIKey, String name) {
-        String selector = URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20"); // fix form encoding -> URI encoding;
-        System.out.println(selector);
+    private void Power(DeviceRequest command, String APIKey, String selector) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.lifx.com/v1/lights/" + selector + "/toggle")) //TODO - Fix Selector issue - should be id or label of device - almost done
                 .header("accept", "application/json")
@@ -77,10 +76,41 @@ public class LIFX {
         System.out.println(response.body());
     }
 
-    private void Colour(DeviceRequest command, String APIKey, String name) {
+    private void Colour(DeviceRequest command, String APIKey, String selector) {
+        String colour = command.getCommandData();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.lifx.com/v1/lights/" + selector + "/state"))
+                .header("accept", "application/json")
+                .header("content-type", "application/json")
+                .header("Authorization", "Bearer " + APIKey)
+                .method("PUT", HttpRequest.BodyPublishers.ofString("{\"duration\":1,\"fast\":false,\"color\":\"" + colour + "\"}"))
+                .build();
+        HttpResponse<String> response;
+        try{
+            response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(response.body());
     }
 
-    private void Brightness(DeviceRequest command, String APIKey, String name) {
+    private void Brightness(DeviceRequest command, String APIKey, String selector) {
+        float brightness = Float.parseFloat(command.getCommandData());
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.lifx.com/v1/lights/" + selector + "/state"))
+                .header("accept", "application/json")
+                .header("content-type", "application/json")
+                .header("Authorization", "Bearer " + APIKey)
+                .method("PUT", HttpRequest.BodyPublishers.ofString("{\"duration\":1,\"fast\":false,\"brightness\":" + brightness + "}"))
+                .build();
+        HttpResponse<String> response;
+        try{
+            response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(response.body());
     }
 
     private void getInfo(DeviceRequest command, String APIKey) {

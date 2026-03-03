@@ -45,7 +45,7 @@ public class DeviceService {
         //Check if user and device are linked, if the command is GET_INFO then the user and device dont need to be linked
         if(!linkService.isUserLinkedToDevice(Request.getUserId(), Request.getDeviceId()) && Request.getCommandType() != CommandType.GET_INFO){
             //Devices are not linked
-            System.out.println("User is not linked to the device");
+            System.out.println("User is not linked to the device / User or device doesnt exist");
             return false;
         }
         switch (Request.getDeviceType()) {

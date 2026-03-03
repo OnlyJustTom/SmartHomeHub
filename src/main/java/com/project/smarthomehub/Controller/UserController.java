@@ -18,7 +18,7 @@ public class UserController {
     private UserService userService;
 
     @PutMapping()
-    public ResponseEntity<?> addUser(@RequestBody User user1) {
+    public ResponseEntity<?> userCreate(@RequestBody User user1) {
         Optional<User> user = userService.addUser(user1.getUsername(), user1.getPassword());
         if(user.isPresent()) {
             return ResponseEntity.ok(user);
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<String> getUser(@RequestBody User user) {
+    public ResponseEntity<String> userLogin(@RequestBody User user) {
         Map<Boolean,String> isUserValid = userService.validateUser(user);
         String returnString;
         if (isUserValid.containsKey(true)) {
@@ -41,4 +41,25 @@ public class UserController {
         }
     }
 
+    @PatchMapping()
+    public ResponseEntity<String> userUpdate(@RequestBody User user) {
+        Optional<User> userToUpdate = userService.updateUser(user);
+        if(userToUpdate.isPresent()) {
+            return ResponseEntity.ok(userToUpdate.get().getUsername());
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error, User not found");
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> userDelete(@RequestBody User user) {
+        Optional<User> userToUpdate = userService.updateUser(user);
+        if(userToUpdate.isPresent()) {
+            return ResponseEntity.ok(userToUpdate.get().getUsername());
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error, User not found");
+        }
+    }
 }
