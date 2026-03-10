@@ -1,0 +1,96 @@
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 75vh;
+  width: 45vw;
+  background-color: #736F72;
+  border-radius: 50px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border: 2px solid #736F72;
+}
+
+.bg {
+  background-color: #D8E1E9;
+  min-height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.title {
+  color: #D8E1E9;
+  font-size: 3rem;
+  position: absolute;
+  top: 5vh;
+}
+
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width : 80%;
+  padding-top: 8rem
+}
+
+.loginForm div {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.loginForm label {
+  display: block;
+  color: #e0e0e0;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.loginForm input[type="username"],
+.loginForm input[type="password"] {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 5px solid #888;
+  background: #232323;
+  color: #e0e0e0;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.loginForm input[type="username"]:focus,
+.loginForm input[type="password"]:focus {
+  border-color: #e0e0e0;
+}
+
+.loginForm input[type="username"]:hover,
+.loginForm input[type="password"]:hover {
+  border-color: #e0e0e0;
+}
+
+.loginForm button {
+  width: 45%;
+  padding: 0.75rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  border: none;
+  background-color: #232323;
+  color: #e0e0e0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.loginForm button:disabled {
+  background-color: #444;
+}

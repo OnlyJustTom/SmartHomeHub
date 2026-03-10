@@ -27,25 +27,22 @@ public class UserController {
         }
     }
 
-    @GetMapping()
-    public ResponseEntity<String> userLogin(@RequestBody User user) {
-        Map<Boolean,String> isUserValid = userService.validateUser(user);
-        String returnString;
-        if (isUserValid.containsKey(true)) {
-            returnString = isUserValid.get(true);
-            return ResponseEntity.ok(returnString);
+    @PostMapping()
+    public ResponseEntity<?> userLogin(@RequestBody User user) {
+        Optional<User> isUserValid = userService.validateUser(user);
+        if (isUserValid.isPresent()) {
+            return ResponseEntity.ok(isUserValid.get());
         }
         else {
-            returnString = isUserValid.get(false);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(returnString);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error, Username or Password incorrect");
         }
     }
 
     @PatchMapping()
-    public ResponseEntity<String> userUpdate(@RequestBody User user) {
+    public ResponseEntity<?> userUpdate(@RequestBody User user) {
         Optional<User> userToUpdate = userService.updateUser(user);
         if(userToUpdate.isPresent()) {
-            return ResponseEntity.ok(userToUpdate.get().getUsername());
+            return ResponseEntity.ok(userToUpdate.get());
         }
         else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error, User not found");
@@ -53,10 +50,10 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> userDelete(@RequestBody User user) {
-        Optional<User> userToUpdate = userService.updateUser(user);
-        if(userToUpdate.isPresent()) {
-            return ResponseEntity.ok(userToUpdate.get().getUsername());
+    public ResponseEntity<?> userDelete(@RequestBody User user) {
+        Optional<User> userToDelete = userService.deleteUser(user.getUsername());
+        if(userToDelete.isPresent()) {
+            return ResponseEntity.ok(userToDelete.get());
         }
         else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error, User not found");

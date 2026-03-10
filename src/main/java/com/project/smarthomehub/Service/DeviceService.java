@@ -57,4 +57,24 @@ public class DeviceService {
         }
         return true;
     }
+
+    public Optional<Device> updateDevice(Device device) {
+        if (!doesDeviceExist(device.getName())) {
+            return Optional.empty();
+        }
+        else{
+            deviceRepo.save(device);
+            return Optional.of(device);
+        }
+    }
+
+    public Optional<Device> deleteDevice(Device device) {
+        if (!doesDeviceExist(device.getName())) {
+            return Optional.empty();
+        }
+        else{
+            deviceRepo.delete(device);
+            return Optional.of(device);
+        }
+    }
 }

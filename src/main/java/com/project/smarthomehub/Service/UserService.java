@@ -52,25 +52,24 @@ public class UserService {
         }
         else{
             User userToDelete = getUserByUsername(username).get();
-            userRepo.delete(userToDelete);
+            userRepo.deleteById(userToDelete.getId());
             return Optional.of(userToDelete);
         }
     }
 
-    public Map<Boolean, String> validateUser(User user) {
+    public Optional<User> validateUser(User user) {
         Optional<User> userToValidate = userRepo.findByUsername(user.getUsername());
 
         if (userToValidate.isEmpty()) {
-            return Map.of(false, "Username or Password incorrect");
+            return Optional.empty();
         }
 
         if (bCryptPasswordEncoder.matches(
                 user.getPassword(),
                 userToValidate.get().getPassword())) {
-            return Map.of(true, "User valid");
+            return userToValidate;
         }
-
-        return Map.of(false, "Username or Password incorrect");
+        return Optional.empty();
     }
 
 

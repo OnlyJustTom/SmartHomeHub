@@ -42,4 +42,22 @@ public class DeviceController {
         }
     }
 
+    @PatchMapping
+    public ResponseEntity<?> updateDevice(@RequestBody Device device) {
+        Optional<Device> DeviceToUpdate = deviceService.updateDevice(device);
+        if (DeviceToUpdate.isPresent()) {
+            return ResponseEntity.ok().body(DeviceToUpdate.get());
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteDevice(@RequestBody Device device) {
+        Optional<Device> deviceToDelete = deviceService.deleteDevice(device);
+        if (deviceToDelete.isPresent()) {
+            return ResponseEntity.ok().body(deviceToDelete.get());
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
 }
