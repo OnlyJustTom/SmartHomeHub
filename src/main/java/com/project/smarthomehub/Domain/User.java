@@ -1,6 +1,7 @@
 package com.project.smarthomehub.Domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class User {
     private String username;
     private String password;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<LinkedDevice> devices = new ArrayList<>();
 

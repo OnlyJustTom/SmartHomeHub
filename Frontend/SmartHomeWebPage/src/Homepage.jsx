@@ -15,6 +15,8 @@ function App() {
   }, [username, password])
 
   function handleUserOrPasswordChange() {
+    document.title = "Smart Home - Login"
+
     if (!username.trim() || !password.trim()) {
       setButtonDisabled(true)
     }

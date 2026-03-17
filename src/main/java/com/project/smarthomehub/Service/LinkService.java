@@ -7,6 +7,9 @@ import com.project.smarthomehub.Repo.LinkRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class LinkService {
 
@@ -24,5 +27,16 @@ public class LinkService {
     public Boolean isUserLinkedToDevice(Integer userID, Integer deviceID) {
         return linkRepo.existsByUser_IdAndDevice_Id(userID,deviceID);
     }
+    public List<Device> userDevices(Integer userID) {
+        List<LinkedDevice> linkedDevices = linkRepo.findAllByUser_Id(userID);
+        List<Device> devices = new ArrayList<>();
 
+        //System.out.println(linkedDevices.size());
+
+        for (LinkedDevice linkedDevice : linkedDevices) {
+            devices.add(linkedDevice.getDevice());
+        }
+        return devices;
+    }
 }
+

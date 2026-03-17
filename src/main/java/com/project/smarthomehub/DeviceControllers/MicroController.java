@@ -12,10 +12,10 @@ import java.net.http.HttpResponse;
 @Service
 public class MicroController {
 
-    public void ExecuteCommand(DeviceRequest request){
+    public void ExecuteCommand(DeviceRequest request, String IPAddress){
         switch (request.getCommandType()){
             case POWER:
-                TogglePower(request);
+                TogglePower(request, IPAddress);
                 break;
             case COLOUR:
                 break;
@@ -28,8 +28,8 @@ public class MicroController {
         }
     }
 
-    void TogglePower(DeviceRequest request){
-        String uri = "http://" + request.getCommandData() + "/api/toggle";
+    void TogglePower(DeviceRequest request, String IPAddress){
+        String uri = "http://" + IPAddress + "/api/toggle";
         System.out.println(uri);
         HttpRequest http = HttpRequest.newBuilder()
                 .uri(URI.create(uri))

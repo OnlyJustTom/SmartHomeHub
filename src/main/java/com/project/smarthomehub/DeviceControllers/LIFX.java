@@ -34,7 +34,7 @@ public class LIFX {
         String Name = "all";
         String selector = "";
         if(request.getCommandType() != CommandType.GET_INFO){
-            APIKey = deviceRepo.findById(request.getDeviceId()).get().getAPIKey();
+            APIKey = deviceRepo.findById(request.getDeviceId()).get().getAPIKeyIP();
             Name = "label:" + deviceRepo.findById(request.getDeviceId()).get().getName();
             selector = URLEncoder.encode(Name, StandardCharsets.UTF_8).replace("+", "%20"); // fix form encoding -> URI encoding;
             System.out.println(Name);
@@ -139,7 +139,7 @@ public class LIFX {
             for (LifxResponse light : lights) {
                 System.out.println(light.getLabel() + " | " + light.getPower());
                 Device newDevice = new Device();
-                newDevice.setAPIKey(APIKey);
+                newDevice.setAPIKeyIP(APIKey);
                 newDevice.setName(light.getLabel());
                 newDevice.setType(DeviceType.LIFX);
                 deviceRepo.save(newDevice);

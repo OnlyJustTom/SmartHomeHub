@@ -42,9 +42,8 @@ public class DeviceService {
 
     public boolean DecodeDeviceCommand(DeviceRequest Request){
         System.out.println(Request.toString());
-        //Check if user and device are linked, if the command is GET_INFO then the user and device dont need to be linked
+        //Check if user and device are linked, if the command is GET_INFO then the user and device don't need to be linked
         if(!linkService.isUserLinkedToDevice(Request.getUserId(), Request.getDeviceId()) && Request.getCommandType() != CommandType.GET_INFO){
-            //Devices are not linked
             System.out.println("User is not linked to the device / User or device doesnt exist");
             return false;
         }
@@ -53,7 +52,8 @@ public class DeviceService {
                 lifx.ExecuteCommand(Request);
                 break;
             case MICROCONTROLLER:
-                microController.ExecuteCommand(Request);
+                String IPAddress = deviceRepo.findById(Request.getDeviceId()).get().getAPIKeyIP();
+                microController.ExecuteCommand(Request, IPAddress);
         }
         return true;
     }

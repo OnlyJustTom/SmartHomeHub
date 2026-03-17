@@ -1,5 +1,6 @@
 package com.project.smarthomehub.Domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.smarthomehub.DeviceType;
 import jakarta.persistence.*;
 
@@ -14,8 +15,9 @@ public class Device {
     private int id;
     private String name;
     private DeviceType type;
-    private String APIKey;
+    private String APIKeyIP;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     private List<LinkedDevice> users = new ArrayList<>();
 
@@ -37,11 +39,11 @@ public class Device {
     public void setType(DeviceType type) {
         this.type = type;
     }
-    public String getAPIKey() {
-        return APIKey;
+    public String getAPIKeyIP() {
+        return APIKeyIP;
     }
-    public void setAPIKey(String APIKey) {
-        this.APIKey = APIKey;
+    public void setAPIKeyIP(String APIKeyIP) {
+        this.APIKeyIP = APIKeyIP;
     }
     public List<LinkedDevice> getUsers() {
         return users;

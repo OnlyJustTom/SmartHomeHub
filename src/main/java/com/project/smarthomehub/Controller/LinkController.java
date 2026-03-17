@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -44,6 +45,13 @@ public class LinkController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<?> GetUserDevices(@RequestBody User user) {
+        System.out.println(user.getId());
+        List<Device> deviceList = linkService.userDevices(user.getId());
+        return ResponseEntity.ok().body(deviceList);
     }
 
 }
