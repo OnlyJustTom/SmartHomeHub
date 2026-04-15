@@ -1,0 +1,40 @@
+.device-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin-top: 1em;
+}
+
+.device-btn {
+  background: #f0f0f0;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s, color 0.2s;
+  outline: none;
+  min-width: 120px;
+  text-align: left;
+  position: relative;
+}
+
+.device-btn.selected {
+  background: #d1e7dd;
+  border: 2px solid #198754;
+  color: #198754;
+  font-weight: bold;
+}
+
+.device-btn:active {
+  background: #e2e3e5;
+}
+
+.device-btn strong {
+  font-weight: bold;
+}
+
+.device button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

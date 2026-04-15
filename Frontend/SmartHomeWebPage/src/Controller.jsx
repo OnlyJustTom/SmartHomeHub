@@ -1,16 +1,21 @@
-import js from '@eslint/js';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-// Accept a prop for the JSON string
-function Controller({ jsonString: device }) {
-   const jsonString1 = JSON.parse(device);
-  
-    // Example function to run on button click
+function Controller({ device }) {
+  if (!device) {
+    return (
+      <div className="controller">
+        <h1>Controller</h1>
+        <h2>No device selected</h2>
+      </div>
+    );
+  }
+
+  // Example function to run on button click
   const handleButtonClick = async () => {
     const payload = {
       userId: 1,
-      deviceId: jsonString1.id,
-      deviceType: jsonString1.type,
+      deviceId: device.id,
+      deviceType: device.type,
       commandType: "POWER",
       commandData: ""
     };
@@ -39,7 +44,7 @@ function Controller({ jsonString: device }) {
     <div className="controller">
       <h1>Controller</h1>
       <h2>Active Device</h2>
-      <p>{jsonString1 && jsonString1.name}</p>
+      <p>{device && device.name}</p>
       <div className="controller-center">
         <button className="central-button" onClick={handleButtonClick}>
           Toggle Power

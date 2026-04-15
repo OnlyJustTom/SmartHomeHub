@@ -22,6 +22,11 @@ public class DeviceController {
         return ResponseEntity.ok().body(foundDevice.get());
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllDevices() {
+        return ResponseEntity.ok().body(deviceService.getAllDevices());
+    }
+
     @PutMapping
     public ResponseEntity<Device> createDevice(@RequestBody Device device) {
         Optional<Device> DeviceToAdd = deviceService.addDevice(device);

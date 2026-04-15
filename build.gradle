@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation 'org.springframework.boot:spring-boot-starter-json'
+    implementation 'org.jmdns:jmdns:3.5.8'
 }
 
 tasks.named('test') {

@@ -1,18 +1,24 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <DNSServer.h>
+#include "ConfigStore.h"
 
-// ---------- WiFi config ----------
-const char* WIFI_SSID     = "Tom";
-const char* WIFI_PASSWORD = "a1234567";
-
-// ---------- Web server ----------
+const byte DNS_PORT = 53;
+DNSServer dnsServer;
 ESP8266WebServer server(80);
 
 #ifndef LED_BUILTIN
 #define LED_BUILTIN 2
 #endif
 
-bool ledOn = false; // track logical state
+const char* AP_SSID = "ESP8266-Setup";
+const char* AP_PASSWORD = "";
+
+WifiConfig config;
+bool ledOn = false;
+
+// -------------------- Helpers --------------------
 
 String jsonEscape(const String& s) {
   String out;
@@ -34,33 +40,243 @@ void setLed(bool on) {
   digitalWrite(LED_BUILTIN, on ? LOW : HIGH);
 }
 
+// -------------------- Normal mode handlers --------------------
+
 void handleRoot() {
   server.send(200, "text/plain", "ok");
 }
 
 void handleStatus() {
+  Serial.println("Status requested");
+
   String body = "{";
-  body += "\"chip\":\"ESP8266\",";
+  body += "\"name\":\"" + String(config.hostname) + "\",";
   body += "\"ip\":\"" + WiFi.localIP().toString() + "\",";
-  body += "\"led\":" + String(ledOn ? "true" : "false");
+  body += "\"deviceType\":\"MICROCONTROLLER\"";
   body += "}";
+
   server.send(200, "application/json", body);
 }
 
 void handleToggleLed() {
-  if(server.method() != HTTP_POST) {
+  if (server.method() != HTTP_POST) {
     server.send(405, "application/json", "{\"error\":\"Use POST\"}");
     return;
   }
-  
+
   setLed(!ledOn);
-  server.send(200, "application/json", String("{\"ok\":true,\"led\":") + (ledOn ? "true" : "false") + "}");
+  server.send(
+    200,
+    "application/json",
+    String("{\"ok\":true,\"led\":") + (ledOn ? "true" : "false") + "}"
+  );
+}
+
+void handleReset() {
+  server.send(200, "text/html",
+    "<html><body style='font-family:Arial;text-align:center;margin-top:50px;'>"
+    "<h2>Clearing saved config...</h2>"
+    "<p>Rebooting into setup mode.</p>"
+    "</body></html>"
+  );
+
+  delay(1500);
+  MDNS.end();
+  clearConfig();
+  ESP.restart();
 }
 
 void handleNotFound() {
   String body = "{\"error\":\"not_found\",\"path\":\"" + jsonEscape(server.uri()) + "\"}";
   server.send(404, "application/json", body);
 }
+
+// -------------------- Setup portal handlers --------------------
+
+void handleSetupPage() {
+  String html = R"rawliteral(
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>ESP8266 Setup</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 30px;
+          background: #f4f4f4;
+        }
+        .container {
+          max-width: 400px;
+          margin: auto;
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+          text-align: center;
+        }
+        input[type="text"], input[type="password"] {
+          width: 100%;
+          padding: 10px;
+          margin: 8px 0 16px 0;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          box-sizing: border-box;
+        }
+        input[type="submit"] {
+          width: 100%;
+          background: #007bff;
+          color: white;
+          padding: 12px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+        }
+        input[type="submit"]:hover {
+          background: #0056b3;
+        }
+        label {
+          font-weight: bold;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>ESP8266 WiFi Setup</h2>
+        <form action="/submit" method="POST">
+          <label for="ssid">WiFi Name (SSID)</label>
+          <input type="text" id="ssid" name="ssid" required>
+
+          <label for="password">WiFi Password</label>
+          <input type="password" id="password" name="password">
+
+          <label for="hostname">Hostname</label>
+          <input type="text" id="hostname" name="hostname" required>
+
+          <input type="submit" value="Save and Reboot">
+        </form>
+      </div>
+    </body>
+    </html>
+  )rawliteral";
+
+  server.send(200, "text/html", html);
+}
+
+void handleSubmit() {
+  String ssid = server.arg("ssid");
+  String password = server.arg("password");
+  String hostname = server.arg("hostname");
+
+  ssid.trim();
+  password.trim();
+  hostname.trim();
+
+  if (ssid.length() == 0 || hostname.length() == 0) {
+    server.send(400, "text/html", "<h2>SSID and Hostname are required</h2>");
+    return;
+  }
+
+  if (!saveConfig(ssid, password, hostname)) {
+    server.send(500, "text/html", "<h2>Failed to save config</h2>");
+    return;
+  }
+
+  server.send(200, "text/html",
+    "<html><body style='font-family:Arial;text-align:center;margin-top:50px;'>"
+    "<h2>Saved successfully</h2>"
+    "<p>Rebooting into normal mode...</p>"
+    "</body></html>"
+  );
+
+  delay(1500);
+  ESP.restart();
+}
+
+// -------------------- Mode startup --------------------
+
+void startSetupMode() {
+  Serial.println("Starting setup mode...");
+
+  WiFi.disconnect();
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP(AP_SSID, AP_PASSWORD);
+
+  IPAddress apIP = WiFi.softAPIP();
+  dnsServer.start(DNS_PORT, "*", apIP);
+
+  Serial.print("AP SSID: ");
+  Serial.println(AP_SSID);
+  Serial.print("AP IP: ");
+  Serial.println(WiFi.softAPIP());
+
+  server.on("/generate_204", HTTP_GET, handleSetupPage);     // Android
+  server.on("/hotspot-detect.html", HTTP_GET, handleSetupPage); // Apple
+  server.on("/ncsi.txt", HTTP_GET, handleSetupPage);         // Windows
+
+  server.on("/", HTTP_GET, handleSetupPage);
+  server.on("/submit", HTTP_POST, handleSubmit);
+  server.onNotFound(handleNotFound);
+
+  server.begin();
+  Serial.println("Setup web server started");
+}
+
+void startNormalMode() {
+  Serial.println("Starting normal mode...");
+
+  WiFi.mode(WIFI_STA);
+
+  String host = String(config.hostname);
+  host.trim();
+
+  if (host.length() > 0) {
+    WiFi.hostname(host);
+  }
+
+  WiFi.begin(config.ssid, config.password);
+
+  Serial.print("Connecting to WiFi");
+  unsigned long startAttempt = millis();
+
+  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 20000) {
+    delay(300);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi failed, switching to setup mode");
+    startSetupMode();
+    return;
+  }
+
+  if (!MDNS.begin(config.hostname)) {
+    Serial.println("Error starting mDNS");
+  } else {
+    MDNS.addService("smarthub", "tcp", 80);
+    Serial.print("mDNS started: http://");
+    Serial.print(config.hostname);
+    Serial.println(".local");
+  }
+
+  Serial.print("Connected! IP: ");
+  Serial.println(WiFi.localIP());
+
+  server.on("/", HTTP_GET, handleRoot);
+  server.on("/api/status", HTTP_GET, handleStatus);
+  server.on("/api/toggle", HTTP_POST, handleToggleLed);
+  server.on("/reset", HTTP_GET, handleReset);
+  server.onNotFound(handleNotFound);
+
+  server.begin();
+  Serial.println("HTTP server started on port 80");
+}
+
+// -------------------- Main --------------------
 
 void setup() {
   Serial.begin(115200);
@@ -69,30 +285,21 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   setLed(false);
 
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  if (loadConfig(config)) {
+    Serial.println("Saved config found:");
+    Serial.print("SSID: ");
+    Serial.println(config.ssid);
+    Serial.print("Hostname: ");
+    Serial.println(config.hostname);
 
-  Serial.print("Connecting to WiFi\n");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(300);
-    Serial.print(".");
+    startNormalMode();
+  } else {
+    Serial.println("No saved config found");
+    startSetupMode();
   }
-
-  Serial.println();
-  Serial.print("Connected! IP: ");
-  Serial.println(WiFi.localIP());
-
-  // Routes
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/api/status", HTTP_GET, handleStatus);
-  server.on("/api/toggle", HTTP_POST, handleToggleLed);
-
-  //Not found
-  server.onNotFound(handleNotFound);
-  server.begin();
-  Serial.println("HTTP server started on port 80");
 }
 
 void loop() {
   server.handleClient();
+  MDNS.update();
 }

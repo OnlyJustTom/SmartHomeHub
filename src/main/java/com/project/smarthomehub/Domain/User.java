@@ -21,6 +21,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<LinkedDevice> devices = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoutineUsers> routines = new ArrayList<>();
+
     public int getId() {
         return id;
     }
@@ -44,5 +48,11 @@ public class User {
     }
     public void setDevices(List<LinkedDevice> devices) {
         this.devices = devices;
+    }
+    public List<RoutineUsers> getRoutines() {
+        return routines;
+    }
+    public void setRoutines(List<RoutineUsers> routines) {
+        this.routines = routines;
     }
 }

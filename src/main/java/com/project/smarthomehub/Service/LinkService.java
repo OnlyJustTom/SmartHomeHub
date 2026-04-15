@@ -31,8 +31,6 @@ public class LinkService {
         List<LinkedDevice> linkedDevices = linkRepo.findAllByUser_Id(userID);
         List<Device> devices = new ArrayList<>();
 
-        //System.out.println(linkedDevices.size());
-
         for (LinkedDevice linkedDevice : linkedDevices) {
             devices.add(linkedDevice.getDevice());
         }

@@ -2,14 +2,23 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Dashboard.css'
 import Controller from './Controller.jsx'
+import Device from './device.jsx'
+import Trigger from './Trigger.jsx'
+import Routine from './Routine.jsx'
 
 function Dashboard() {
   const [jsonString, setJsonString] = useState("")
   const [user, setUser] = useState(null)
-  const [devices, setDevices] = useState([])
+  const [userDevices, setUserDevices] = useState([])
   const [activeDevice, setActiveDevice] = useState(null)
+  const [showAddMenu, setShowAddMenu] = useState(false)
+  const [activeMenu, setActiveMenu] = useState(null)
+  const [showDeviceMenu, setShowDeviceMenu] = useState(false)
+  const [showAddDeviceMenu, setShowAddDeviceMenu] = useState(false)
+  const [showTriggerMenu, setShowTriggerMenu] = useState(false)
+  const [showRoutineMenu, setShowRoutineMenu] = useState(false)
   const navigate = useNavigate()
-
+  
   useEffect(() => {
     const savedUser = localStorage.getItem("user")
 
@@ -26,6 +35,7 @@ function Dashboard() {
       localStorage.removeItem("user")
       navigate("/")
     }
+
   }, [navigate])
 
   const logout = () => {
@@ -33,13 +43,17 @@ function Dashboard() {
     navigate("/")
   }
 
+  useEffect(() => {
+    if (jsonString) {
+      getUserDevices();
+    }
+  }, [jsonString]);
+
   if (!user) {
     return <p>Loading...</p>
   }
 
-  const getUserDevices = async (e) => {
-    e.preventDefault()
-
+ const getUserDevices = async (e) => {
     try {
       const response = await fetch('http://localhost:8080/link', {
         method: 'POST',
@@ -51,7 +65,7 @@ function Dashboard() {
 
       if(response.ok){
         data = await response.json()
-        setDevices(data)
+        setUserDevices(data)
         console.log("User devices:", data)
       }
       else{
@@ -63,10 +77,8 @@ function Dashboard() {
     }
   }
 
-
   function handleAddDevice() {
-    // Logic to add a new device
-    console.log("Add Device button clicked")
+    setShowAddMenu((prev) => !prev);
   }
 
   document.title = `Dashboard - ${user.username}`
@@ -79,30 +91,34 @@ function Dashboard() {
         <button onClick={logout}>Logout</button>
       </div>
       <div className='deviceBar'>
-        <h2>Devices</h2>
-        {devices.map((device, index) => (
+        <h2>My Devices</h2>
+        {userDevices.map((device, index) => (
           <button key={index} onClick={() => {
             setActiveDevice(device);
+            setShowAddDeviceMenu(false);
+            setShowDeviceMenu(false);
             console.log("Active device:", device);
-          }}>{device.name} (ID: {device.id})</button>
+          }}>(ID: {device.id}) {device.name}</button>
         ))}
       </div>
       <div className='deviceControl'>
-        <button className='addDevice' title='Add Device' onClick={getUserDevices}>+</button>
-        <Controller jsonString={JSON.stringify(activeDevice)}/>
+        <div className='addDeviceContainer'>
+          <button className={"addDevice" + (showAddMenu ? " open" : "")} title='Add Device' onClick={handleAddDevice}>+</button>
+          <div
+            className={"addDeviceMenuPopup" + (showAddMenu ? " open" : "")}
+            style={{ display: showAddMenu || true ? 'flex' : 'none' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button onClick={() => { setShowDeviceMenu(!showDeviceMenu); setActiveMenu('device');}}>{!showDeviceMenu ? "Add Existing Device" : "Return to Control Menu"}</button>
+            <button onClick={() => { setShowAddDeviceMenu(!showAddDeviceMenu); setActiveMenu('addDevice');}}>{!showAddDeviceMenu ? "Add New Device" : "Return to Control Menu"}</button>
+            <button onClick={() => { setShowTriggerMenu(!showTriggerMenu); setActiveMenu('trigger')}}>{!showTriggerMenu ? "Add Trigger" : "Return to Control Menu"}</button>
+            <button onClick={() => { setShowRoutineMenu(!showRoutineMenu); setActiveMenu('routine')}}>{!showRoutineMenu ? "Add Routine" : "Return to Control Menu"}</button>
+          </div>
+        </div>
+        {activeMenu === 'device' && showDeviceMenu ? <Device addNewDevice={showAddDeviceMenu} user={user}/> : activeMenu === 'addDevice' && showAddDeviceMenu ? <Device addNewDevice={showAddDeviceMenu} user={user}/> : activeMenu === 'trigger' && showTriggerMenu ? <Trigger userDevices={userDevices}/> : activeMenu === 'routine' && showRoutineMenu ? <Routine/> : <Controller device={activeDevice}/> }
       </div>
     </div>
   )
 }
 
 export default Dashboard
-
-
-// <div style={{ padding: "2rem" }}>
-    //   <h1>Dashboard</h1>
-    //   <p>Welcome, {user.username}</p>
-
-    //   <p>User ID: {user.id}</p>
-
-    //   <button onClick={logout}>Logout</button>
-    // </div>

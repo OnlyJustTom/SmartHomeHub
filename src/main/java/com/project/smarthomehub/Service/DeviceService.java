@@ -9,6 +9,7 @@ import com.project.smarthomehub.Repo.DeviceRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,7 @@ public class DeviceService {
     LIFX lifx;
     @Autowired
     MicroController microController;
+    
     public Optional<Device> addDevice(Device device) {
             deviceRepo.save(device);
             return Optional.of(device);
@@ -40,6 +42,10 @@ public class DeviceService {
         return device.isPresent();
     }
 
+    public List<Device> getAllDevices() {
+        return deviceRepo.findAll();
+    }
+
     public boolean DecodeDeviceCommand(DeviceRequest Request){
         System.out.println(Request.toString());
         //Check if user and device are linked, if the command is GET_INFO then the user and device don't need to be linked
@@ -52,8 +58,7 @@ public class DeviceService {
                 lifx.ExecuteCommand(Request);
                 break;
             case MICROCONTROLLER:
-                String IPAddress = deviceRepo.findById(Request.getDeviceId()).get().getAPIKeyIP();
-                microController.ExecuteCommand(Request, IPAddress);
+                microController.ExecuteCommand(Request);
         }
         return true;
     }
@@ -77,4 +82,6 @@ public class DeviceService {
             return Optional.of(device);
         }
     }
+
+
 }

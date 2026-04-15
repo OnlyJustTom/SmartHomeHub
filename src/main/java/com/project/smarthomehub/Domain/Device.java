@@ -21,6 +21,19 @@ public class Device {
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     private List<LinkedDevice> users = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoutineDevices> routines = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sourceDevice", cascade = CascadeType.ALL)
+    private List<Trigger> triggerSources = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TriggerDevices> triggerTargets = new ArrayList<>();
+
+
     public int getId() {
         return id;
     }
@@ -50,5 +63,27 @@ public class Device {
     }
     public void setUsers(List<LinkedDevice> users) {
         this.users = users;
+    }
+    public List<RoutineDevices> getRoutines() {
+        return routines;
+    }
+    public void setRoutines(List<RoutineDevices> routines) {
+        this.routines = routines;
+    }
+
+    public List<Trigger> getTriggerSources() {
+        return triggerSources;
+    }
+
+    public void setTriggerSources(List<Trigger> triggerSources) {
+        this.triggerSources = triggerSources;
+    }
+
+    public List<TriggerDevices> getTriggerTargets() {
+        return triggerTargets;
+    }
+
+    public void setTriggerTargets(List<TriggerDevices> triggerTargets) {
+        this.triggerTargets = triggerTargets;
     }
 }

@@ -1,0 +1,79 @@
+.trigger {
+	width: 100%;
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 16px;
+}
+
+.triggerForm {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.triggerForm label {
+	font-weight: 600;
+}
+
+.triggerForm select,
+.triggerForm input {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #cfcfcf;
+	border-radius: 6px;
+}
+
+.targetDeviceList {
+	max-height: 320px;
+	overflow-y: auto;
+	padding-right: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.targetDeviceCard {
+	border: 1px solid #e3e3e3;
+	border-radius: 8px;
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	background: #fafafa;
+}
+
+.triggerActions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 6px;
+}
+
+.triggerActions button,
+.removeTargetButton {
+	border: none;
+	padding: 8px 12px;
+	border-radius: 6px;
+	cursor: pointer;
+	background: #111827;
+	color: #ffffff;
+}
+
+.removeTargetButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.payloadPreview {
+	margin-top: 16px;
+	padding: 12px;
+	border-radius: 8px;
+	border: 1px solid #dedede;
+	background: #f5f5f5;
+}
+
+.payloadPreview pre {
+	margin: 0;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
