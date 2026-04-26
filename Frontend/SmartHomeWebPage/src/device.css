@@ -38,3 +38,112 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.device-add {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 20px;
+  color: #D8E1E9;
+  box-sizing: border-box;
+}
+
+.deviceForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: calc(100% - 72px);
+  min-height: 0;
+  background: rgba(216, 225, 233, 0.08);
+  border: 1px solid rgba(216, 225, 233, 0.25);
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-sizing: border-box;
+}
+
+.deviceForm label {
+  font-weight: 600;
+  color: #D8E1E9;
+}
+
+.deviceForm select,
+.deviceForm input {
+  width: 280px;
+  padding: 8px;
+  border: 1px solid #D8E1E9;
+  border-radius: 6px;
+  background: #D8E1E9;
+  color: #736F72;
+  box-sizing: border-box;
+}
+
+.deviceActions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.deviceCircleButton {
+  border: none;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: #D8E1E9;
+  color: #736F72;
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.deviceCircleButton:hover {
+  background: #b8c3cc;
+  color: #555055;
+  transform: scale(1.03);
+}
+
+.deviceFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(100%, 420px);
+}
+
+@media (max-width: 1200px) {
+  .deviceForm {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .device-add {
+    padding: 12px;
+  }
+
+  .deviceForm {
+    width: 100%;
+    height: calc(100% - 56px);
+    min-height: 0;
+    padding: 18px;
+    align-items: stretch;
+  }
+
+  .deviceForm select,
+  .deviceForm input {
+    width: 100%;
+  }
+
+  .deviceActions {
+    justify-content: center;
+  }
+}

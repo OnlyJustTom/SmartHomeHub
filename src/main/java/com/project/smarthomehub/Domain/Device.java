@@ -18,7 +18,7 @@ public class Device {
     private String APIKeyIP;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL , orphanRemoval = true)
     private List<LinkedDevice> users = new ArrayList<>();
 
     @JsonIgnore
@@ -26,7 +26,7 @@ public class Device {
     private List<RoutineDevices> routines = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "sourceDevice", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sourceDevice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Trigger> triggerSources = new ArrayList<>();
 
     @JsonIgnore

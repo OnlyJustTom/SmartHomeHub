@@ -18,8 +18,11 @@ public class DeviceController {
 
     @GetMapping
     public ResponseEntity<Device> getDevice(@RequestBody Device device) {
-        Optional<Device> foundDevice = deviceService.getDeviceById(device.getId());
-        return ResponseEntity.ok().body(foundDevice.get());
+        Optional<Device> deviceToGet = deviceService.getDeviceById(device.getId());
+        if (deviceToGet.isPresent()) {
+            return ResponseEntity.ok().body(deviceToGet.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/all")
@@ -57,12 +60,23 @@ public class DeviceController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteDevice(@RequestBody Device device) {
-        Optional<Device> deviceToDelete = deviceService.deleteDevice(device);
-        if (deviceToDelete.isPresent()) {
-            return ResponseEntity.ok().body(deviceToDelete.get());
+        public ResponseEntity<?> deleteDevice(@RequestBody Device device) {
+            Optional<Device> deviceToDelete = deviceService.deleteDevice(device);
+            if (deviceToDelete.isPresent()) {
+                return ResponseEntity.ok().body(deviceToDelete.get());
+            }
+            return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/microcontroller")
+    public ResponseEntity<?> resetMicrocontroller(@RequestBody Integer microcontrollerId) {
+        boolean result = deviceService.resetMicrocontroller(microcontrollerId);
+        if (result) {
+            return ResponseEntity.ok().build();
         }
-        return ResponseEntity.badRequest().build();
+        else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

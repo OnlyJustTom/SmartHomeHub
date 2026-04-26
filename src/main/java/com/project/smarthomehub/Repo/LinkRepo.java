@@ -14,7 +14,8 @@ import java.util.Optional;
 
 @Repository
 public interface LinkRepo extends JpaRepository<LinkedDevice, LinkedDeviceId> {
-    Optional<LinkedDevice> findByUser(User user);
     boolean existsByUser_IdAndDevice_Id(int userId, int deviceId);
+    void deleteByUser_IdAndDevice_Id(int userId, int deviceId);
     List<LinkedDevice> findAllByUser_Id(int userId);
+    Optional<LinkedDevice> findByDevice_Id(int deviceId);
 }

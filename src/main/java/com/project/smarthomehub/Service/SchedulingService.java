@@ -42,7 +42,8 @@ public class SchedulingService {
             if(!routine.getTimeToExecute().equals(currentTime)){
                 continue;
             }
-            if(routine.getLastExecuted() != null && routine.getLastExecuted().toLocalTime().equals(currentTime.plusMinutes(1)) && routine.getLastExecuted().toLocalDate().equals(today)){
+            if(routine.getLastExecuted() != null && routine.getLastExecuted().toLocalTime().equals(currentTime.plusMinutes(1))
+                    && routine.getLastExecuted().toLocalDate().equals(today)){
                 continue;
             }
 

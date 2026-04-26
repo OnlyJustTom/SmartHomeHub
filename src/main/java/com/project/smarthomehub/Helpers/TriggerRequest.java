@@ -10,9 +10,9 @@ public class TriggerRequest {
     private Integer triggerDevice;
     private TriggerCondition triggerCondition;
 
-    private List<TriggerDeviceRequst> targetDevices;
+    private List<TriggerDeviceRequest> targetDevices;
 
-    public static class TriggerDeviceRequst {
+    public static class TriggerDeviceRequest {
         private Integer deviceId;
         private CommandType commandType;
         private String commandData;
@@ -56,10 +56,10 @@ public class TriggerRequest {
         this.triggerCondition = triggerCondition;
     }
 
-    public List<TriggerDeviceRequst> getTargetDevices() {
+    public List<TriggerDeviceRequest> getTargetDevices() {
         return targetDevices;
     }
-    public void setTargetDevices(List<TriggerDeviceRequst> targetDevices) {
+    public void setTargetDevices(List<TriggerDeviceRequest> targetDevices) {
         this.targetDevices = targetDevices;
     }
 }

@@ -1,0 +1,241 @@
+.routine {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	padding: 20px;
+	color: #D8E1E9;
+	height: 90%;
+	display: flex;
+	flex-direction: column;
+}
+
+.routine h1 {
+	margin: 0 0 12px 0;
+}
+
+.routineList {
+	background: rgba(216, 225, 233, 0.08);
+	border: 1px solid rgba(216, 225, 233, 0.25);
+	border-radius: 12px;
+	padding: 14px;
+	width: min(80%, 1100px);
+}
+
+.routineList p {
+	margin: 0 0 10px 0;
+	color: #D8E1E9;
+}
+
+.routineButton {
+	width: 100%;
+	text-align: left;
+	padding: 10px 12px;
+	margin-top: 8px;
+	border: 1px solid #D8E1E9;
+	border-radius: 8px;
+	background: rgba(216, 225, 233, 0.08);
+	color: #D8E1E9;
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.routineButton:hover {
+	background: #D8E1E9;
+	color: #736F72;
+}
+
+.routineForm {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: min(80%, 1100px);
+	height: 90%;
+	min-height: 0;
+	background: rgba(216, 225, 233, 0.08);
+	border: 1px solid rgba(216, 225, 233, 0.25);
+	border-radius: 12px;
+	padding: 14px;
+}
+
+.routineForm label {
+	font-weight: 600;
+	color: #D8E1E9;
+}
+
+.routineForm input,
+.routineForm select {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #D8E1E9;
+	border-radius: 6px;
+	background: #D8E1E9;
+	color: #736F72;
+	box-sizing: border-box;
+}
+
+.routineSchedule {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.dayCheckboxGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 8px;
+}
+
+.dayCheckbox {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	border: 1px solid rgba(216, 225, 233, 0.3);
+	border-radius: 8px;
+	padding: 8px;
+	background: rgba(216, 225, 233, 0.05);
+}
+
+.dayCheckbox input {
+	width: auto;
+	margin: 0;
+}
+
+.dayCheckbox span {
+	font-weight: 500;
+	color: #D8E1E9;
+}
+
+.timePicker {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px 10px;
+}
+
+.enabledCheckbox {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.enabledCheckbox input {
+	width: auto;
+	margin: 0;
+}
+
+.routineHint {
+	margin: 0;
+	color: rgba(216, 225, 233, 0.85);
+}
+
+.routineDeviceList {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	padding-right: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.routineDeviceCard {
+	border: 1px solid rgba(216, 225, 233, 0.35);
+	border-radius: 8px;
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	background: rgba(216, 225, 233, 0.08);
+}
+
+.routineDeviceTitle {
+	margin: 0;
+	font-weight: 700;
+}
+
+.routineActions {
+	display: flex;
+	gap: 10px;
+	margin-top: 8px;
+}
+
+.routineActions button {
+	border: none;
+	padding: 8px 12px;
+	border-radius: 6px;
+	cursor: pointer;
+	background: #D8E1E9;
+	color: #736F72;
+	font-weight: 600;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.routineActions button:hover {
+	background: #b8c3cc;
+	color: #555055;
+}
+
+.routineActions button:disabled {
+	background: #8d969d;
+	color: #e5e7ea;
+	cursor: not-allowed;
+	opacity: 0.75;
+}
+
+.routineActions button:disabled:hover {
+	background: #8d969d;
+	color: #e5e7ea;
+}
+
+.routineActions .deleteRoutineButton {
+	background: #b74b5c;
+	color: #f7eef0;
+}
+
+.routineActions .deleteRoutineButton:hover {
+	background: #993d4d;
+	color: #fff6f8;
+}
+
+.routinePayloadPreview {
+	margin-top: 16px;
+	width: min(80%, 1100px);
+	padding: 12px;
+	border-radius: 8px;
+	border: 1px solid rgba(216, 225, 233, 0.35);
+	background: rgba(216, 225, 233, 0.12);
+}
+
+.routinePayloadPreview h2 {
+	margin: 0 0 8px 0;
+}
+
+.routinePayloadPreview pre {
+	margin: 0;
+	white-space: pre-wrap;
+	word-break: break-word;
+	color: #D8E1E9;
+}
+
+@media (max-width: 1200px) {
+	.routineList,
+	.routineForm,
+	.routinePayloadPreview {
+		width: 90%;
+	}
+}
+
+@media (max-width: 768px) {
+	.routine {
+		padding: 12px;
+	}
+
+	.routineList,
+	.routineForm,
+	.routinePayloadPreview {
+		width: 100%;
+	}
+
+	.timePicker {
+		grid-template-columns: 1fr;
+	}
+}

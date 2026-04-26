@@ -49,7 +49,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping()
     public ResponseEntity<?> userDelete(@RequestBody User user) {
         Optional<User> userToDelete = userService.deleteUser(user.getUsername());
         if(userToDelete.isPresent()) {

@@ -3,12 +3,19 @@ package com.project.smarthomehub.Service;
 import com.project.smarthomehub.CommandType;
 import com.project.smarthomehub.DeviceControllers.LIFX;
 import com.project.smarthomehub.DeviceControllers.MicroController;
+import com.project.smarthomehub.DeviceType;
 import com.project.smarthomehub.Domain.Device;
 import com.project.smarthomehub.Helpers.DeviceRequest;
 import com.project.smarthomehub.Repo.DeviceRepo;
+import com.project.smarthomehub.Repo.LinkRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +30,10 @@ public class DeviceService {
     LIFX lifx;
     @Autowired
     MicroController microController;
-    
+    @Autowired
+    private LinkRepo linkRepo;
+
+    @Transactional
     public Optional<Device> addDevice(Device device) {
             deviceRepo.save(device);
             return Optional.of(device);
@@ -63,6 +73,7 @@ public class DeviceService {
         return true;
     }
 
+    @Transactional
     public Optional<Device> updateDevice(Device device) {
         if (!doesDeviceExist(device.getName())) {
             return Optional.empty();
@@ -73,6 +84,7 @@ public class DeviceService {
         }
     }
 
+    @Transactional
     public Optional<Device> deleteDevice(Device device) {
         if (!doesDeviceExist(device.getName())) {
             return Optional.empty();
@@ -83,5 +95,41 @@ public class DeviceService {
         }
     }
 
+    @Transactional
+    public boolean resetMicrocontroller(Integer microcontrollerId) {
+        Optional<Device> deviceOpt = deviceRepo.findById(microcontrollerId);
+        System.out.println("Attempting to reset microcontroller with ID: " + deviceOpt.get().getId());
+        if (deviceOpt.isEmpty() || deviceOpt.get().getType() == DeviceType.LIFX) {
+            System.out.println("Device not found or device is not a microcontroller");
+            return false;
+        }
 
+
+        Device device = deviceOpt.get();
+
+        String ipAddress = device.getAPIKeyIP();
+        if (ipAddress == null || ipAddress.isBlank()) {
+            return false;
+        }
+        String baseUrl = "http://" + ipAddress;
+        System.out.println("Sending reset command to microcontroller at: " + baseUrl + "/reset");
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/reset"))
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+
+            HttpResponse<Void> response = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.discarding());
+
+            if(response.statusCode() == 200) {
+                System.out.println("Microcontroller reset successfully");
+                deleteDevice(device);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

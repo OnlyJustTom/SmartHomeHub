@@ -36,7 +36,7 @@ public class LIFX {
         if(request.getCommandType() != CommandType.GET_INFO){
             APIKey = deviceRepo.findById(request.getDeviceId()).get().getAPIKeyIP();
             Name = "label:" + deviceRepo.findById(request.getDeviceId()).get().getName();
-            selector = URLEncoder.encode(Name, StandardCharsets.UTF_8).replace("+", "%20"); // fix form encoding -> URI encoding;
+            selector = URLEncoder.encode(Name, StandardCharsets.UTF_8).replace("+", "%20");
             System.out.println(Name);
         }else{
             //Only the API key is passed by the user on initial discovery of lights after this all API keys are stored in the DB
@@ -62,7 +62,7 @@ public class LIFX {
     }
     private void Power(DeviceRequest command, String APIKey, String selector) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.lifx.com/v1/lights/" + selector + "/toggle")) //TODO - Fix Selector issue - should be id or label of device - almost done
+                .uri(URI.create("https://api.lifx.com/v1/lights/" + selector + "/toggle"))
                 .header("accept", "application/json")
                 .header("content-type", "application/json")
                 .header("Authorization", "Bearer " + APIKey)

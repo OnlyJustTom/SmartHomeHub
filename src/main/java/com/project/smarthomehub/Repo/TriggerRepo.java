@@ -10,8 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface TriggerRepo extends JpaRepository<Trigger, Integer> {
-
-    public Optional<Trigger> findDeviceById(Integer id);
     public Optional<List<Trigger>> findAllBySourceDevice(Device device);
 
 }

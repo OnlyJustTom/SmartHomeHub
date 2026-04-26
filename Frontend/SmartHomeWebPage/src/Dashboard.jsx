@@ -5,19 +5,19 @@ import Controller from './Controller.jsx'
 import Device from './device.jsx'
 import Trigger from './Trigger.jsx'
 import Routine from './Routine.jsx'
+import AccountSettings from './AccountSettings.jsx'
 
 function Dashboard() {
   const [jsonString, setJsonString] = useState("")
   const [user, setUser] = useState(null)
   const [userDevices, setUserDevices] = useState([])
   const [activeDevice, setActiveDevice] = useState(null)
+  const [activeRoutineDevices, setActiveRoutineDevices] = useState([])
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [activeMenu, setActiveMenu] = useState(null)
-  const [showDeviceMenu, setShowDeviceMenu] = useState(false)
-  const [showAddDeviceMenu, setShowAddDeviceMenu] = useState(false)
-  const [showTriggerMenu, setShowTriggerMenu] = useState(false)
-  const [showRoutineMenu, setShowRoutineMenu] = useState(false)
   const navigate = useNavigate()
+
+  const routineSidebarDevices = userDevices.filter(device => device.type === 'LIFX' || device.type === 'MICROCONTROLLER')
   
   useEffect(() => {
     const savedUser = localStorage.getItem("user")
@@ -54,11 +54,12 @@ function Dashboard() {
   }
 
  const getUserDevices = async (e) => {
+    console.log(user.username)
     try {
       const response = await fetch('http://localhost:8080/link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: jsonString
+        body: JSON.stringify({"id": user.id})
       })
       
       let data = null
@@ -81,6 +82,59 @@ function Dashboard() {
     setShowAddMenu((prev) => !prev);
   }
 
+  function toggleMenu(menu) {
+    setActiveMenu((prev) => {
+      const nextMenu = prev === menu ? null : menu
+
+      if (prev === 'trigger' && nextMenu === null) {
+        setActiveDevice(null)
+      }
+
+      if (nextMenu === 'routine') {
+        setActiveRoutineDevices([])
+      }
+
+      if (prev === 'routine' && nextMenu !== 'routine') {
+        setActiveRoutineDevices([])
+      }
+
+      return nextMenu
+    })
+  }
+
+  function renderDashboardContent(jsxObject = null) {
+    if (jsxObject) return jsxObject
+
+    if (activeMenu === 'device') {
+      return <Device addNewDevice={false} user={user} linkedDevices={userDevices} />
+    }
+
+    if (activeMenu === 'addDevice') {
+      return <Device addNewDevice={true} user={user} />
+    }
+
+    if (activeMenu === 'trigger') {
+      return <Trigger userDevices={userDevices} device={activeDevice} />
+    }
+
+    if (activeMenu === 'routine') {
+      return (
+        <Routine
+          devices={activeRoutineDevices}
+          allDevices={routineSidebarDevices}
+          user={user}
+          onSelectedDevicesChange={setActiveRoutineDevices}
+        />
+      )
+    }
+
+    if (activeMenu === 'account') {
+      return <AccountSettings username={user.username} />
+    }
+
+    return <Controller device={activeDevice} user={user} />
+  }
+
   document.title = `Dashboard - ${user.username}`
 
   return (
@@ -88,17 +142,59 @@ function Dashboard() {
       <div className='navbar'>
         <h1>Dashboard</h1>
         <h1>Welcome, {user.username}. Please pick or add a device</h1>
+        <button onClick={() => {toggleMenu('account')}}>{activeMenu !== 'account' ? "Account Settings" : "Return"}</button>
         <button onClick={logout}>Logout</button>
       </div>
       <div className='deviceBar'>
-        <h2>My Devices</h2>
-        {userDevices.map((device, index) => (
-          <button key={index} onClick={() => {
-            setActiveDevice(device);
-            setShowAddDeviceMenu(false);
-            setShowDeviceMenu(false);
-            console.log("Active device:", device);
-          }}>(ID: {device.id}) {device.name}</button>
+        <h2>
+          {activeMenu === 'trigger'
+            ? 'Source Devices'
+            : activeMenu === 'routine'
+              ? 'Routine Devices'
+              : 'My Devices'}
+        </h2>
+        {userDevices
+          .filter((device) => {
+            if (activeMenu === 'trigger') {
+              return device.type === 'SENSOR'
+            }
+
+            return routineSidebarDevices.some(routineDevice => routineDevice.id === device.id)
+          })
+          .map((device, index) => (
+          <button
+            key={index}
+            className={`deviceButton${
+              activeMenu === 'routine'
+                ? activeRoutineDevices.some(selectedDevice => selectedDevice.id === device.id)
+                  ? ' active'
+                  : ''
+                : activeDevice?.id === device.id
+                  ? ' active'
+                  : ''
+            }`}
+            onClick={() => {
+              if (activeMenu === 'trigger') {
+                setActiveDevice(device)
+              } else if (activeMenu === 'routine') {
+                setActiveRoutineDevices(prev => {
+                  const alreadySelected = prev.some(selectedDevice => selectedDevice.id === device.id)
+
+                  if (alreadySelected) {
+                    return prev.filter(selectedDevice => selectedDevice.id !== device.id)
+                  }
+
+                  return [...prev, device]
+                })
+              } else {
+                setActiveDevice(device)
+                setActiveMenu(null)
+              }
+              console.log("Active device:", device);
+            }}
+          >
+            (ID: {device.id}) {device.name}
+          </button>
         ))}
       </div>
       <div className='deviceControl'>
@@ -109,13 +205,13 @@ function Dashboard() {
             style={{ display: showAddMenu || true ? 'flex' : 'none' }}
             onClick={e => e.stopPropagation()}
           >
-            <button onClick={() => { setShowDeviceMenu(!showDeviceMenu); setActiveMenu('device');}}>{!showDeviceMenu ? "Add Existing Device" : "Return to Control Menu"}</button>
-            <button onClick={() => { setShowAddDeviceMenu(!showAddDeviceMenu); setActiveMenu('addDevice');}}>{!showAddDeviceMenu ? "Add New Device" : "Return to Control Menu"}</button>
-            <button onClick={() => { setShowTriggerMenu(!showTriggerMenu); setActiveMenu('trigger')}}>{!showTriggerMenu ? "Add Trigger" : "Return to Control Menu"}</button>
-            <button onClick={() => { setShowRoutineMenu(!showRoutineMenu); setActiveMenu('routine')}}>{!showRoutineMenu ? "Add Routine" : "Return to Control Menu"}</button>
+            <button onClick={() => toggleMenu('device')}>{activeMenu !== 'device' ? "Add Existing Device" : "Return to Control Menu"}</button>
+            <button onClick={() => toggleMenu('addDevice')}>{activeMenu !== 'addDevice' ? "Add New Device" : "Return to Control Menu"}</button>
+            <button onClick={() => toggleMenu('trigger')}>{activeMenu !== 'trigger' ? "Add Trigger" : "Return to Control Menu"}</button>
+            <button onClick={() => toggleMenu('routine')}>{activeMenu !== 'routine' ? "Add Routine" : "Return to Control Menu"}</button>
           </div>
         </div>
-        {activeMenu === 'device' && showDeviceMenu ? <Device addNewDevice={showAddDeviceMenu} user={user}/> : activeMenu === 'addDevice' && showAddDeviceMenu ? <Device addNewDevice={showAddDeviceMenu} user={user}/> : activeMenu === 'trigger' && showTriggerMenu ? <Trigger userDevices={userDevices}/> : activeMenu === 'routine' && showRoutineMenu ? <Routine/> : <Controller device={activeDevice}/> }
+        {renderDashboardContent()}
       </div>
     </div>
   )

@@ -147,11 +147,18 @@ public class MicroController {
                     System.out.println("Error connecting to device at IP: " + IPAddress);
                     continue;
                 }
+                catch (ArrayIndexOutOfBoundsException e){
+                    DiscoverDevices();
+                }
             }
 
 
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            devicesIPDiscovered.clear();
+
         }
     }
 }

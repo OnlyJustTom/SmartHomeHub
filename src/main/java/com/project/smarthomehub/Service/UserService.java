@@ -2,6 +2,7 @@ package com.project.smarthomehub.Service;
 
 import com.project.smarthomehub.Domain.User;
 import com.project.smarthomehub.Repo.UserRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,27 +12,27 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-
-    //TODO - Implement Security + Configs to allow frontend communication (ie IP address whitelist) - Partially Done
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
     private UserRepo userRepo;
 
 
+    @Transactional
     public Optional<User> addUser(String username, String password) {
         if(!doesUserExist(username)) {
             User newUser = new User();
             newUser.setUsername(username);
             newUser.setPassword(bCryptPasswordEncoder.encode(password));
             userRepo.save(newUser);
-            return Optional.of(newUser);    //TODO - Fix return not showing correct ID - always 0.
+            return Optional.of(newUser);
         }
         else{
             return Optional.empty();
         }
     }
 
+    @Transactional
     public Optional<User> updateUser(User user) {
         if(!doesUserExist(user.getUsername())) {
             return Optional.empty();
@@ -45,6 +46,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public Optional<User> deleteUser(String username) {
         if(!doesUserExist(username)) {
             return Optional.empty();
@@ -56,6 +58,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public Optional<User> validateUser(User user) {
         Optional<User> userToValidate = userRepo.findByUsername(user.getUsername());
 
@@ -71,7 +74,7 @@ public class UserService {
         return Optional.empty();
     }
 
-
+    
     private boolean doesUserExist(String username) {
         Optional<User> user = userRepo.findByUsername(username);
         return user.isPresent();

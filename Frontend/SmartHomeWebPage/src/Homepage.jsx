@@ -9,7 +9,6 @@ function App() {
   const [buttonDisabled, setButtonDisabled] = useState(true)
   const navigate = useNavigate()
 
-  // Function that runs every time username or password changes
   useEffect(() => {
     handleUserOrPasswordChange()
   }, [username, password])
@@ -49,12 +48,10 @@ function App() {
 
       if(response.ok){
         data = await response.json()
-        //Save the user in local storage
         if(localStorage.getItem("user")){
           localStorage.removeItem("user")
         }
         localStorage.setItem("user", JSON.stringify(data))
-        //Navigate to dashboard
         console.log(JSON.stringify(data))
         navigate("/dashboard")
       }

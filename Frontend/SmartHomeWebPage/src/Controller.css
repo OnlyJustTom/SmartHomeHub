@@ -1,19 +1,100 @@
-.controller{
-    background-color: #736F72;
+.controller {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 20px;
     color: #D8E1E9;
-    width: 86vw;
-    height: 90vh;
-    position: absolute;
-    top: 9vh;
-    left: 13.5vw;
-    border-radius: 10px;
+    height: 90%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.controller h1 {
+    margin: 0 0 12px 0;
+}
+
+.controllerPanel {
+    background: rgba(216, 225, 233, 0.08);
+    border: 1px solid rgba(216, 225, 233, 0.25);
+    border-radius: 12px;
+    padding: 14px;
+    width: min(80%, 1100px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.controllerPanel h2,
+.controllerPanel h3 {
+    margin: 0;
+}
+
+.controllerForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.controllerForm label {
+    font-weight: 600;
+    color: #D8E1E9;
+}
+
+.controllerForm input,
+.controllerForm select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #D8E1E9;
+    border-radius: 6px;
+    background: #D8E1E9;
+    color: #736F72;
+    box-sizing: border-box;
+}
+
+.controllerActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.controllerActions button,
+.controllerPanel > button {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #D8E1E9;
+    color: #736F72;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.controllerActions button:hover,
+.controllerPanel > button:hover {
+    background: #b8c3cc;
+    color: #555055;
+}
+
+.controllerDangerButton {
+    background: #D8E1E9;
+    color: #736F72;
+}
+
+.controllerDangerButton:hover {
+    background: #b8c3cc;
+    color: #555055;
 }
 
 .controller-center {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 60vh;
+    min-height: 180px;
 }
 
 .central-button {
@@ -23,15 +104,36 @@
     border-radius: 50%;
     width: 120px;
     height: 120px;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-size: 1rem;
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    transition: background 0.2s, color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
 }
 
 .central-button:hover {
-    background-color: #B0B8C1;
-    color: #333;
+    background-color: #b8c3cc;
+    color: #555055;
     transform: scale(1.05);
+}
+
+.controllerDeviceName {
+    margin: 0;
+    font-weight: 700;
+}
+
+@media (max-width: 1200px) {
+    .controllerPanel {
+        width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+    .controller {
+        padding: 12px;
+    }
+
+    .controllerPanel {
+        width: 100%;
+    }
 }

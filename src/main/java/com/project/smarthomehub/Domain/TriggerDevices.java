@@ -1,5 +1,6 @@
 package com.project.smarthomehub.Domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.smarthomehub.CommandType;
 import com.project.smarthomehub.Helpers.TriggerDeviceId;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ public class TriggerDevices {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trigger_id", nullable = false)
+    @JsonIgnore
     private Trigger trigger;
 
     @Id

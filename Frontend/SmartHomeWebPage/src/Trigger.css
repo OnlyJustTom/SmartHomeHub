@@ -1,30 +1,46 @@
 .trigger {
 	width: 100%;
-	max-width: 900px;
-	margin: 0 auto;
-	padding: 16px;
+	max-width: none;
+	margin: 0;
+	padding: 20px;
+	color: #D8E1E9;
 }
 
 .triggerForm {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+	width: min(80%, 1100px);
+	min-height: clamp(560px, 74vh, 860px);
+	transform-origin: left top;
+	background: rgba(216, 225, 233, 0.08);
+	border: 1px solid rgba(216, 225, 233, 0.25);
+	border-radius: 12px;
+	padding: 14px;
 }
 
 .triggerForm label {
 	font-weight: 600;
+	color: #D8E1E9;
 }
 
 .triggerForm select,
 .triggerForm input {
 	width: 100%;
 	padding: 8px;
-	border: 1px solid #cfcfcf;
+	border: 1px solid #D8E1E9;
 	border-radius: 6px;
+	background: #D8E1E9;
+	color: #736F72;
+	box-sizing: border-box;
+}
+
+.triggerForm input[id^="commandData-"] {
+	width: 98%;
 }
 
 .targetDeviceList {
-	max-height: 320px;
+	max-height: clamp(380px, 56vh, 640px);
 	overflow-y: auto;
 	padding-right: 6px;
 	display: flex;
@@ -32,14 +48,42 @@
 	gap: 10px;
 }
 
+@media (max-width: 1200px) {
+	.triggerForm {
+		width: 90%;
+		transform: translateX(-3%);
+		min-height: clamp(520px, 72vh, 820px);
+	}
+
+	.targetDeviceList {
+		max-height: clamp(340px, 52vh, 580px);
+	}
+}
+
+@media (max-width: 768px) {
+	.trigger {
+		padding: 12px;
+	}
+
+	.triggerForm {
+		width: 100%;
+		transform: translateX(0);
+		min-height: auto;
+	}
+
+	.targetDeviceList {
+		max-height: 50vh;
+	}
+}
+
 .targetDeviceCard {
-	border: 1px solid #e3e3e3;
+	border: 1px solid rgba(216, 225, 233, 0.35);
 	border-radius: 8px;
 	padding: 12px;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	background: #fafafa;
+	background: rgba(216, 225, 233, 0.08);
 }
 
 .triggerActions {
@@ -55,8 +99,28 @@
 	padding: 8px 12px;
 	border-radius: 6px;
 	cursor: pointer;
-	background: #111827;
-	color: #ffffff;
+	background: #D8E1E9;
+	color: #736F72;
+	font-weight: 600;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.triggerActions button:disabled {
+	background: #8d969d;
+	color: #e5e7ea;
+	cursor: not-allowed;
+	opacity: 0.75;
+}
+
+.triggerActions button:hover,
+.removeTargetButton:hover {
+	background: #b8c3cc;
+	color: #555055;
+}
+
+.triggerActions button:disabled:hover {
+	background: #8d969d;
+	color: #e5e7ea;
 }
 
 .removeTargetButton:disabled {
@@ -64,16 +128,54 @@
 	opacity: 0.6;
 }
 
+.triggerList {
+	background: rgba(216, 225, 233, 0.08);
+	border: 1px solid rgba(216, 225, 233, 0.25);
+	border-radius: 12px;
+	padding: 14px;
+	width: 95%;
+}
+
+.triggerList p {
+	margin: 0 0 10px 0;
+	color: #D8E1E9;
+}
+
+.triggerHint {
+	margin: 0 0 12px 0;
+	color: rgba(216, 225, 233, 0.85);
+	font-style: italic;
+}
+
+.triggerButton {
+	width: 99%;
+	text-align: left;
+	padding: 10px 12px;
+	margin-top: 8px;
+	border: 1px solid #D8E1E9;
+	border-radius: 8px;
+	background: rgba(216, 225, 233, 0.08);
+	color: #D8E1E9;
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.triggerButton:hover {
+	background: #D8E1E9;
+	color: #736F72;
+}
+
 .payloadPreview {
 	margin-top: 16px;
 	padding: 12px;
 	border-radius: 8px;
-	border: 1px solid #dedede;
-	background: #f5f5f5;
+	border: 1px solid rgba(216, 225, 233, 0.35);
+	background: rgba(216, 225, 233, 0.12);
 }
 
 .payloadPreview pre {
 	margin: 0;
 	white-space: pre-wrap;
 	word-break: break-word;
+	color: #D8E1E9;
 }

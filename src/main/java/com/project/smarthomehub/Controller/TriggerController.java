@@ -31,6 +31,28 @@ public class TriggerController {
     @PostMapping
     public ResponseEntity<?> executeTrigger(@RequestBody TriggerControlRequest triggerControlRequest) {
         String statusMsg = triggerService.executeTrigger(triggerControlRequest);
+        //System.out.println("Trigger execution status: " + statusMsg);
+        return ResponseEntity.ok(statusMsg);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteTrigger(@RequestBody Integer triggerId) {
+        if (triggerService.deleteTrigger(triggerId)) {
+            System.out.println("Trigger with ID " + triggerId + " deleted successfully.");
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/device")
+    public ResponseEntity<?> getTriggersByDeviceId(@RequestBody Integer deviceId) {
+        return ResponseEntity.ok().body(triggerService.getAllTriggersByDeviceId(deviceId).get());
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<?> testTrigger(@RequestBody Integer triggerId) {
+        String statusMsg = triggerService.testTrigger(triggerId);
+        System.out.println("Trigger execution status: " + statusMsg);
         return ResponseEntity.ok(statusMsg);
     }
 }

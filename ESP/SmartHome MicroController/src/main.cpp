@@ -91,6 +91,11 @@ void handleNotFound() {
   server.send(404, "application/json", body);
 }
 
+void handleSetupNotFound() {
+  server.sendHeader("Location", "http://192.168.4.1/", true);
+  server.send(302, "text/plain", "");
+}
+
 // -------------------- Setup portal handlers --------------------
 
 void handleSetupPage() {
@@ -208,6 +213,8 @@ void startSetupMode() {
   IPAddress apIP = WiFi.softAPIP();
   dnsServer.start(DNS_PORT, "*", apIP);
 
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+
   Serial.print("AP SSID: ");
   Serial.println(AP_SSID);
   Serial.print("AP IP: ");
@@ -219,7 +226,7 @@ void startSetupMode() {
 
   server.on("/", HTTP_GET, handleSetupPage);
   server.on("/submit", HTTP_POST, handleSubmit);
-  server.onNotFound(handleNotFound);
+  server.onNotFound(handleSetupNotFound);
 
   server.begin();
   Serial.println("Setup web server started");

@@ -54,5 +54,15 @@ public class LinkController {
         return ResponseEntity.ok().body(deviceList);
     }
 
+    @DeleteMapping
+    public ResponseEntity<?> UnlinkDeviceFromUser(@RequestBody Link link) {
+        Optional<Device> device = deviceService.getDeviceById(link.getDeviceID());
+        Optional<User> user = userService.getUserById(link.getUserID());
+        if(device.isPresent() && user.isPresent()) {
+            linkService.unlinkDevice(user.get(), device.get());
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
 

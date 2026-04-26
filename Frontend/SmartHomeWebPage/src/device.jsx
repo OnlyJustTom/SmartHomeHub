@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './device.css'
 
-function Device({ addNewDevice, user }) {
-    const [name, setName] = useState('');
-    const [apiKeyIPAddress, setApiKeyIpAddress] = useState('');
+function Device({ addNewDevice, user, linkedDevices = [] }) {
     const [devices, setDevices] = useState([]);
     const [selected, setSelected] = useState([]);
-    const [deviceTypes, setDeviceTypes] = useState(["Lifx", "Microcontroller", "Sensor"]);
-    const [selectedDeviceType, setSelectedDeviceType] = useState("Lifx");
+    const deviceTypes = ["LIFX", "MICROCONTROLLER"];
+    const [selectedDeviceType, setSelectedDeviceType] = useState(deviceTypes[0]);
+    const [apiKey, setApiKey] = useState('');
+    const refreshPage = () => window.location.reload()
+
+    const linkedDeviceIds = useMemo(
+        () => new Set(linkedDevices.map(device => Number(device.id))),
+        [linkedDevices]
+    )
+
+    const filteredDevices = useMemo(
+        () => devices.filter(device => !linkedDeviceIds.has(Number(device.id))),
+        [devices, linkedDeviceIds]
+    )
 
     const getDevices = async (e) => {
         try {
@@ -18,7 +28,10 @@ function Device({ addNewDevice, user }) {
             let data = null
             if(response.ok){
                 data = await response.json()
-                setDevices(data)
+                const filteredData = Array.isArray(data)
+                    ? data.filter(device => !linkedDeviceIds.has(Number(device.id)))
+                    : []
+                setDevices(filteredData)
                 console.log(data)
             }
             else{
@@ -41,6 +54,8 @@ function Device({ addNewDevice, user }) {
     };
 
     const handleAdd = async () => {
+        const successfullyLinkedDeviceIds = []
+
         for (const device of selected) {
             try {
                 const response = await fetch('http://localhost:8080/link', {
@@ -53,6 +68,7 @@ function Device({ addNewDevice, user }) {
                 });
                 if (response.ok) {
                     console.log(`Linked device ${device.id} successfully.`);
+                    successfullyLinkedDeviceIds.push(Number(device.id))
                 } else {
                     console.error(`Failed to link device ${device.id}:`, response.statusText);
                 }
@@ -60,44 +76,42 @@ function Device({ addNewDevice, user }) {
                 console.error(`Error linking device ${device.id}:`, error);
             }
         }
+
+        if (successfullyLinkedDeviceIds.length > 0) {
+            refreshPage()
+        }
     };
 
-    const handleNewDeviceSubmit = async (e) => {
-        e.preventDefault();
-        
-        console.log(JSON.stringify({
-            name: name,
-            APIKeyIP: apiKeyIPAddress,
-            type: selectedDeviceType.toUpperCase()
-        }))
+    const handleNewDeviceSubmit = async () => {
+        if (selectedDeviceType === 'LIFX' && !apiKey.trim()) {
+            console.error('API key is required for LIFX devices.')
+            return
+        }
 
-        console.log("Submitting new device with details:", { name, apiKeyIPAddress, selectedDeviceType });
-        
-        try{
-            const response = await fetch('http://localhost:8080/device', {
-                method: 'PUT',
+        const payload = {
+            userId: user.id,
+            deviceId: 0,
+            deviceType: selectedDeviceType,
+            commandType: "GET_INFO",
+            commandData: selectedDeviceType === 'LIFX' ? apiKey.trim() : ""
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/device/control', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: name,
-                    APIKeyIP: apiKeyIPAddress,
-                    type: selectedDeviceType.toUpperCase()
-                })
+                body: JSON.stringify(payload)
             })
 
-            
-
-            if(response.ok){
-                const data = await response.json();
-                console.log(data);
+            if (response.ok) {
+                console.log('GET_INFO command sent successfully!', payload)
+                refreshPage()
+            } else {
+                console.error('Failed to send GET_INFO command:', response.statusText)
             }
-            else{
-                console.error("Failed to add device:", response.statusText)
-            }
+        } catch (error) {
+            console.error('Error sending GET_INFO command:', error)
         }
-        catch(error){
-            console.error("Error adding device:", error)
-        }
-        
     };
 
 
@@ -107,7 +121,7 @@ function Device({ addNewDevice, user }) {
                 <h1>Device</h1>
                 <button onClick={getDevices}>Get All Devices</button>
                 <div className="device-list">
-                    {devices.map((device) => {
+                    {filteredDevices.map((device) => {
                         const isSelected = selected.some((d) => d.id === device.id);
                         return (
                             <button
@@ -129,49 +143,44 @@ function Device({ addNewDevice, user }) {
     }
     else{
         return (
-            <div className="device">
+            <div className="device device-add">
                 <h1>Add new Device</h1>
-                <form onSubmit={handleNewDeviceSubmit}>
-                    <div>
-                        <label htmlFor="name">Name</label>
-                        <input
-                            id="name"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
-                    </div>
+                <div className="deviceForm">
+                <div className="deviceActions">
+                    <button className="deviceCircleButton" type="button" onClick={handleNewDeviceSubmit}>
+                        +
+                    </button>
+                </div>
 
-                    <div>
-                        <label htmlFor="apiKey">APIKey / IPAddress</label>
+                <div className="deviceFieldGroup">
+                    <label htmlFor="deviceType">Device Type</label>
+                    <select
+                        id="deviceType"
+                        value={selectedDeviceType}
+                        onChange={(e) => setSelectedDeviceType(e.target.value)}
+                    >
+                        {deviceTypes.map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {selectedDeviceType === 'LIFX' && (
+                    <div className="deviceFieldGroup">
+                        <label htmlFor="apiKey">API Key</label>
                         <input
                             id="apiKey"
                             type="text"
-                            value={apiKeyIPAddress}
-                            onChange={(e) => setApiKeyIpAddress(e.target.value)}
+                            value={apiKey}
+                            onChange={(e) => setApiKey(e.target.value)}
+                            placeholder="Enter LIFX API key"
                             required
                         />
                     </div>
-
-                    <div>
-                        <label htmlFor="deviceType">Device Type</label>
-                        <select
-                            id="deviceType"
-                            value={selectedDeviceType}
-                            onChange={(e) => setSelectedDeviceType(e.target.value)}
-                            required
-                        >
-                            {deviceTypes.map((type) => (
-                                <option key={type} value={type}>
-                                    {type}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <button type="submit" style={{ marginTop: '1em' }}>Submit</button>
-                </form>
+                )}
+                </div>
             </div>
             
         );

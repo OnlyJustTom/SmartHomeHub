@@ -1,5 +1,6 @@
 package com.project.smarthomehub.Domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.smarthomehub.TriggerCondition;
 import jakarta.persistence.*;
 
@@ -19,7 +20,6 @@ public class Trigger {
 
     @Enumerated(EnumType.STRING)
     private TriggerCondition triggerCondition;
-    
 
     @OneToMany(mappedBy = "trigger", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TriggerDevices> targetDevices = new ArrayList<>();

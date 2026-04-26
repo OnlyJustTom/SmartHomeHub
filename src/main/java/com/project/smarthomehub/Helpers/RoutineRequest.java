@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class RoutineRequest {
-
     private String name;
     private LocalTime timeToExecute;
     private List<DayOfWeek> daysToExecute;
