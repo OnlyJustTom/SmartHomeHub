@@ -128,6 +128,14 @@ This project addresses the fragmentation of smart home ecosystems by providing a
 
 ---
 
+## Original Repository
+
+The code for this project was developed in the following GitHub repository: https://github.com/OnlyJustTom/SmartHomeHub
+
+Here all commit messages and development history can be viewed.
+
+---
+
 ## Author
 Tom Ellingworth  
 University of Leicester – Computer Science Final Year Project
