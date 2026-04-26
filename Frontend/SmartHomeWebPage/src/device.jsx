@@ -7,6 +7,10 @@ function Device({ addNewDevice, user, linkedDevices = [] }) {
     const deviceTypes = ["LIFX", "MICROCONTROLLER"];
     const [selectedDeviceType, setSelectedDeviceType] = useState(deviceTypes[0]);
     const [apiKey, setApiKey] = useState('');
+    const [manualDeviceName, setManualDeviceName] = useState('');
+    const [manualDeviceIpAddress, setManualDeviceIpAddress] = useState('');
+    const [manualDeviceType, setManualDeviceType] = useState('MICROCONTROLLER');
+    const [isManualFormVisible, setIsManualFormVisible] = useState(false);
     const refreshPage = () => window.location.reload()
 
     const linkedDeviceIds = useMemo(
@@ -114,6 +118,47 @@ function Device({ addNewDevice, user, linkedDevices = [] }) {
         }
     };
 
+    const handleManualDeviceTypeChange = (e) => {
+        const nextType = e.target.value
+        setSelectedDeviceType(nextType)
+
+        if (nextType !== 'MICROCONTROLLER') {
+            setIsManualFormVisible(false)
+        }
+    }
+
+    const handleManualDeviceSubmit = async (e) => {
+        e.preventDefault()
+
+        if (!manualDeviceName.trim() || !manualDeviceIpAddress.trim()) {
+            console.error('Device name and IP address are required.')
+            return
+        }
+
+        const payload = {
+            name: manualDeviceName.trim(),
+            APIKeyIP: manualDeviceIpAddress.trim(),
+            type: manualDeviceType,
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/device', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+
+            if (response.ok) {
+                console.log('Manual device created successfully!', payload)
+                refreshPage()
+            } else {
+                console.error('Failed to create manual device:', response.statusText)
+            }
+        } catch (error) {
+            console.error('Error creating manual device:', error)
+        }
+    }
+
 
     if (addNewDevice == false) {
         return (
@@ -146,40 +191,94 @@ function Device({ addNewDevice, user, linkedDevices = [] }) {
             <div className="device device-add">
                 <h1>Add new Device</h1>
                 <div className="deviceForm">
-                <div className="deviceActions">
-                    <button className="deviceCircleButton" type="button" onClick={handleNewDeviceSubmit}>
-                        +
-                    </button>
-                </div>
-
-                <div className="deviceFieldGroup">
-                    <label htmlFor="deviceType">Device Type</label>
-                    <select
-                        id="deviceType"
-                        value={selectedDeviceType}
-                        onChange={(e) => setSelectedDeviceType(e.target.value)}
-                    >
-                        {deviceTypes.map((type) => (
-                            <option key={type} value={type}>
-                                {type}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {selectedDeviceType === 'LIFX' && (
                     <div className="deviceFieldGroup">
-                        <label htmlFor="apiKey">API Key</label>
-                        <input
-                            id="apiKey"
-                            type="text"
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
-                            placeholder="Enter LIFX API key"
-                            required
-                        />
+                        <label htmlFor="deviceType">Device Type</label>
+                        <select
+                            id="deviceType"
+                            value={selectedDeviceType}
+                            onChange={handleManualDeviceTypeChange}
+                        >
+                            {deviceTypes.map((type) => (
+                                <option key={type} value={type}>
+                                    {type}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                )}
+
+                    {selectedDeviceType === 'LIFX' && (
+                        <div className="deviceFieldGroup">
+                            <label htmlFor="apiKey">API Key</label>
+                            <input
+                                id="apiKey"
+                                type="text"
+                                value={apiKey}
+                                onChange={(e) => setApiKey(e.target.value)}
+                                placeholder="Enter LIFX API key"
+                                required
+                            />
+                        </div>
+                    )}
+
+                    <div className="deviceActions">
+                        <button className="deviceCircleButton" type="button" onClick={handleNewDeviceSubmit}>
+                            +
+                        </button>
+                    </div>
+
+                    {selectedDeviceType === 'MICROCONTROLLER' && !isManualFormVisible && (
+                        <button
+                            className="deviceSubmitButton"
+                            type="button"
+                            onClick={() => setIsManualFormVisible(true)}
+                        >
+                            Add Device Manually
+                        </button>
+                    )}
+
+                    {selectedDeviceType === 'MICROCONTROLLER' && isManualFormVisible && (
+                        <form className="deviceManualForm" onSubmit={handleManualDeviceSubmit}>
+                            <div className="deviceFieldGroup">
+                                <label htmlFor="manualDeviceName">Device Name</label>
+                                <input
+                                    id="manualDeviceName"
+                                    type="text"
+                                    value={manualDeviceName}
+                                    onChange={(e) => setManualDeviceName(e.target.value)}
+                                    placeholder="Enter device name"
+                                    required
+                                />
+                            </div>
+
+                            <div className="deviceFieldGroup">
+                                <label htmlFor="manualDeviceIpAddress">IP Address</label>
+                                <input
+                                    id="manualDeviceIpAddress"
+                                    type="text"
+                                    value={manualDeviceIpAddress}
+                                    onChange={(e) => setManualDeviceIpAddress(e.target.value)}
+                                    placeholder="Enter IP address"
+                                    required
+                                />
+                            </div>
+
+                            <div className="deviceFieldGroup">
+                                <label htmlFor="manualDeviceTypeValue">Type</label>
+                                <select
+                                    id="manualDeviceTypeValue"
+                                    value={manualDeviceType}
+                                    onChange={(e) => setManualDeviceType(e.target.value)}
+                                >
+                                    <option value="MICROCONTROLLER">MICROCONTROLLER</option>
+                                    <option value="SENSOR">SENSOR</option>
+                                </select>
+                            </div>
+
+                            <button className="deviceSubmitButton" type="submit">
+                                Add Device
+                            </button>
+                        </form>
+                    )}
                 </div>
             </div>
             

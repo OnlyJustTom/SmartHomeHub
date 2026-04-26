@@ -64,6 +64,19 @@
   box-sizing: border-box;
 }
 
+.deviceForm--manual {
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.deviceManualForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  align-items: stretch;
+}
+
 .deviceForm label {
   font-weight: 600;
   color: #D8E1E9;
@@ -119,6 +132,27 @@
   width: min(100%, 420px);
 }
 
+.deviceSubmitButton {
+  width: min(100%, 420px);
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #D8E1E9;
+  color: #736F72;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.deviceSubmitButton:hover {
+  background: #b8c3cc;
+  transform: translateY(-1px);
+}
+
+.deviceSubmitButton:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 1200px) {
   .deviceForm {
     width: 100%;
@@ -145,5 +179,9 @@
 
   .deviceActions {
     justify-content: center;
+  }
+
+  .deviceSubmitButton {
+    width: 100%;
   }
 }
